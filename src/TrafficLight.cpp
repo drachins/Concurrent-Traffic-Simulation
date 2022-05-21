@@ -20,6 +20,11 @@ void MessageQueue<T>::send(T &&msg)
 {
     // FP.4a : The method send should use the mechanisms std::lock_guard<std::mutex> 
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
+    std::lock_guard<std::mutex> sLock(_mutex);
+    _queue.push_back(std::move(msg));
+    _condition.notify_one();
+
+
 }
 
 
@@ -47,7 +52,7 @@ TrafficLightPhase TrafficLight::getCurrentPhase()
 void TrafficLight::simulate()
 {
     // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. To do this, use the thread queue in the base class. 
-    threads.emplace_back(std::thread(&cycleThroughPhases, this));
+    threads.emplace_back(std::thread(&TrafficLight::cycleThroughPhases, this));
 }
 
 // virtual function which is executed in a thread
@@ -60,7 +65,7 @@ void TrafficLight::cycleThroughPhases()
 
     // Get random time duration between 4-6 seconds.
     std::default_random_engine phaseEngine;
-    std::uniform_real_distribution phaseDistro(4000,6000);
+    std::uniform_real_distribution<double> phaseDistro(4000,6000);
     double phaseDuration = phaseDistro(phaseEngine);
 
     // Get current time 
@@ -71,13 +76,21 @@ void TrafficLight::cycleThroughPhases()
         long timeSinceLastCycle = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastCycle).count();
         if(timeSinceLastCycle >= phaseDuration)
         {
-            // Toggle alue of _currentPhase
+            // Toggle value of _currentPhase
             this->_currentPhase = (this->_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
+
             //Send update to message queue. 
+            _trafficMsgs.send(std::move(_currentPhase));
+
+            // idle thread for 1 second between cycles 
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            break;
         }
 
 
     }
+
+
 
 }
 
