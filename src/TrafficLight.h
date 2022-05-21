@@ -6,6 +6,7 @@
 #include <condition_variable>
 #include "TrafficObject.h"
 
+
 // enum TrafficLightPhase declaration as a global variable
 enum TrafficLightPhase {red, green};
 
