@@ -6,6 +6,9 @@
 #include <condition_variable>
 #include "TrafficObject.h"
 
+// enum TrafficLightPhase declaration as a global variable
+enum TrafficLightPhase {red, green};
+
 // forward declarations to avoid include cycle
 class Vehicle;
 
@@ -19,7 +22,8 @@ template <class T>
 class MessageQueue
 {
 public:
-
+    T send(T &&msg);
+    T recieve();
 private:
     
 };
@@ -33,9 +37,7 @@ private:
 class TrafficLight : public TrafficObject
 {
 public:
-    // public members
-    enum TrafficLightPhase {red, green};
-
+  
     // constructor / desctructor
     TrafficLight();
     
@@ -54,6 +56,7 @@ private:
     // send in conjunction with move semantics.
 
     TrafficLightPhase _currentPhase;
+    
     std::condition_variable _condition;
     std::mutex _mutex;
 };
