@@ -54,6 +54,7 @@ public:
     // typical behaviour methods
     void WaitForGreen();
     void simulate();
+    TrafficLightPhase waitForGreen();
 
 private:
     // typical behaviour methods
