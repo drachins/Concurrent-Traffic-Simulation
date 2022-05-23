@@ -114,9 +114,10 @@ void TrafficLight::cycleThroughPhases()
 
             // idle thread for 1 second between cycles 
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            lastCycle = std::chrono::system_clock::now();
         }
 
-        lastCycle = std::chrono::system_clock::now();
+        
     }
 
 
