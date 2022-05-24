@@ -112,8 +112,9 @@ void TrafficLight::cycleThroughPhases()
             //Send update to message queue. 
             _trafficMsgs.send(std::move(_currentPhase));
 
-            // idle thread for 1 second between cycles 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            // idle thread for 1 millisecond between cycles 
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            // reset cycle
             lastCycle = std::chrono::system_clock::now();
         }
 
